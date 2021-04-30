@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mysql:
+    build:
+      context: ./docker/mariadb
+      args:
+        mariadb_version: ${MYSQL_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    restart: always
+
+  php:
+    build:
+      context: ./docker/php
+      args:
+        php_version: ${PHP_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-php
+    ports:
+      - "${PHP_PORT}:80"
+    volumes:
+      - ${WWW_PATH}:/var/www/html
+    working_dir: /var/www/html
+    links:
+      - mysql
